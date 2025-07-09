@@ -1,5 +1,5 @@
 const asyncHandelar = (reqHand) => {
-    (req,res,next) =>  {
+  return  (req,res,next) =>  {
         Promise.resolve(reqHand(req,res,next)).catch((err) => next(err))
     }
 }
