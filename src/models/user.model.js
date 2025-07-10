@@ -5,7 +5,7 @@ import bcrypt from "bcrypt"
 const userSchema = new Schema(
     {
         username: {
-            Type: String,
+            type: String,
             required: true,
             unique: true,
             lowercase: true,
@@ -13,22 +13,23 @@ const userSchema = new Schema(
             index: true,
         },
         email: {
-            Type: String,
+            type: String,
             required: true,
             unique: true,
             lowercase: true,
             trim: true,
         },
         fullname: {
-            Type: String,
+            type: String,
             required: true,
             trim: true,
             index: true
         },
         avtar: {
-            type: true, //cloudnary url
-            require: true,
+            type: String,
+            required: true
         },
+
         coverImg: {
             type: String, //cloudnary url
         },
@@ -54,7 +55,7 @@ const userSchema = new Schema(
 userSchema.pre("save", async function (next) {
     if (!this.isModified("password")) return next();
 
-    this.password = bcrypt.hash(this.password, 10)
+    this.password = await    bcrypt.hash(this.password, 10)
     next()
 })
 
@@ -62,10 +63,10 @@ userSchema.method.isPasswordCorrect = async function (password) {
     return await bcrypt.compare(password, this.password)
 }
 
-userSchema.method.genrateAccessToken = function() {
+userSchema.method.genrateAccessToken = function () {
     jwt.sign(
         {
-            _id : this._id,
+            _id: this._id,
             email: this.email,
             username: this.username,
             fullname: this.fullname
@@ -76,10 +77,10 @@ userSchema.method.genrateAccessToken = function() {
         }
     )
 }
-userSchema.method.genrateRefreshToken = function() {
-      jwt.sign(
+userSchema.method.genrateRefreshToken = function () {
+    jwt.sign(
         {
-            _id : this._id
+            _id: this._id
         },
         process.env.REFRESH_TOKEN_SECRET,
         {
